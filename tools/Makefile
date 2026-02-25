@@ -8,9 +8,15 @@ RUSTEXEC=$(CARGO_HOME)/bin/rustc
 RUSTUPEXEC=$(CARGO_HOME)/bin/rustup
 CARGOEXEC=$(CARGO_HOME)/bin/cargo
 
+RUST_TOOLCHAIN ?= 1.85.0
+
 LOGFILES=log
 
 installtools: install_gcc install_rust install_morty install_bender install_fusesoc install_toolchain install_verilator install_sv2v install_cellift_python install_yosys install_spike 
+
+$(LOGFILES)/.gcc.done: | $(LOGFILES)
+	( cd gcc && sh go.sh ) >$(LOGFILES)/gcc.log 2>&1
+	touch $@
 
 install_gtkwave:
 	# this one is not in the installtools list
@@ -20,7 +26,9 @@ silly_test_target:
 	echo Ok, silly test done.
 
 install_gcc:
-	( cd gcc && sh go.sh ) >$(LOGFILES)/gcc.log 2>&1
+	@true
+
+install_gcc: $(LOGFILES)/.gcc.done
 
 install_verilator:
 	( cd verilator && autoconf && ./configure --prefix=$(PREFIX_CELLIFT) && make -j$(CELLIFT_JOBS) && make install ) >$(LOGFILES)/verilator.log 2>&1
@@ -47,8 +55,8 @@ install_cellift_python: $(CELLIFT_PYTHON_VENV)
 	)  >$(LOGFILES)/cellift-python.log 2>&1
 
 $(RUSTEXEC):
-	( CARGO_HOME=$(CARGO_HOME) RUSTUP_HOME=$(RUSTUP_HOME) ./rustup-init -y --default-toolchain 1.61.0 ) >$(LOGFILES)/rust.log 2>&1
-	$(RUSTUPEXEC) install 1.61.0 >$(LOGFILES)/rustup.log 2>&1
+	( CARGO_HOME=$(CARGO_HOME) RUSTUP_HOME=$(RUSTUP_HOME) ./rustup-init -y --default-toolchain $(RUST_TOOLCHAIN) ) >$(LOGFILES)/rust.log 2>&1
+	$(RUSTUPEXEC) install $(RUST_TOOLCHAIN) >$(LOGFILES)/rustup.log 2>&1
 
 install_morty: $(RUSTEXEC)
 	$(CARGOEXEC) install --path morty --root $(PREFIX_CELLIFT) >$(LOGFILES)/morty.log 2>&1
@@ -80,4 +88,3 @@ cleantools:
 
 $(PREFIX_CELLIFT)/riscv:
 	mkdir -p $@
-

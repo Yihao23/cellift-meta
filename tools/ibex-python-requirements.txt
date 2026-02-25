@@ -9,7 +9,8 @@ git+https://github.com/lowRISC/fusesoc.git@ot
 hjson
 mako
 mistletoe>=0.7.2
-pandas
+# pandas>=2.3 requires newer Python (and pulls a meson source build on py3.9).
+pandas<2.3
 premailer
 pyvsc
 pyyaml
