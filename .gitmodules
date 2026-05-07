@@ -27,4 +27,4 @@
 	url = https://github.com/comsec-group/cellift-opentitan.git
 [submodule "tools/cellift-yosys"]
 	path = tools/cellift-yosys
-	url = https://github.com/comsec-group/cellift-yosys.git
+	url = https://github.com/Yihao23/cellift-yosys.git
