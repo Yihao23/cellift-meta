@@ -8,7 +8,6 @@ RUSTEXEC=$(CARGO_HOME)/bin/rustc
 RUSTUPEXEC=$(CARGO_HOME)/bin/rustup
 CARGOEXEC=$(CARGO_HOME)/bin/cargo
 
-RUST_TOOLCHAIN ?= 1.85.0
 
 LOGFILES=log
 
@@ -47,6 +46,7 @@ install_rust: $(RUSTEXEC)
 install_cellift_python: $(CELLIFT_PYTHON_VENV)
 	(  \
 		set -e; \
+		$(CELLIFT_PYTHON_VENV)/bin/pip install --upgrade pip setuptools wheel; \
 		$(CELLIFT_PYTHON_VENV)/bin/pip install -r ../design-processing/python-requirements.txt; \
 		$(CELLIFT_PYTHON_VENV)/bin/pip install -r ../python-experiments/python-requirements.txt; \
 		$(CELLIFT_PYTHON_VENV)/bin/pip install -r ibex-python-requirements.txt; \
@@ -55,14 +55,14 @@ install_cellift_python: $(CELLIFT_PYTHON_VENV)
 	)  >$(LOGFILES)/cellift-python.log 2>&1
 
 $(RUSTEXEC):
-	( CARGO_HOME=$(CARGO_HOME) RUSTUP_HOME=$(RUSTUP_HOME) ./rustup-init -y --default-toolchain $(RUST_TOOLCHAIN) ) >$(LOGFILES)/rust.log 2>&1
-	$(RUSTUPEXEC) install $(RUST_TOOLCHAIN) >$(LOGFILES)/rustup.log 2>&1
+	( CARGO_HOME=$(CARGO_HOME) RUSTUP_HOME=$(RUSTUP_HOME) ./rustup-init -y --default-toolchain 1.61.0 ) >$(LOGFILES)/rust.log 2>&1
+	$(RUSTUPEXEC) install 1.61.0 >$(LOGFILES)/rustup.log 2>&1
 
 install_morty: $(RUSTEXEC)
-	$(CARGOEXEC) install --path morty --root $(PREFIX_CELLIFT) >$(LOGFILES)/morty.log 2>&1
+	$(CARGOEXEC) install --locked --path morty --root $(PREFIX_CELLIFT) >$(LOGFILES)/morty.log 2>&1
 
 install_bender: $(RUSTEXEC)
-	$(CARGOEXEC) install --path bender --root $(PREFIX_CELLIFT) >$(LOGFILES)/bender.log 2>&1
+	$(CARGOEXEC) install --locked --path bender --root $(PREFIX_CELLIFT) >$(LOGFILES)/bender.log 2>&1
 
 install_fusesoc: $(CELLIFT_PYTHON_VENV)
 	$(CELLIFT_PYTHON_VENV)/bin/pip install fusesoc==1.12.0 >$(LOGFILES)/fusesoc.log 2>&1
