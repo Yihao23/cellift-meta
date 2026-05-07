@@ -24,7 +24,7 @@
 	url = https://github.com/riscv-software-src/riscv-isa-sim
 [submodule "external-dependencies/cellift-opentitan"]
 	path = external-dependencies/cellift-opentitan
-	url = https://github.com/comsec-group/cellift-opentitan.git
+	url = https://github.com/Yihao23/cellift-opentitan.git
 [submodule "tools/cellift-yosys"]
 	path = tools/cellift-yosys
 	url = https://github.com/Yihao23/cellift-yosys.git
