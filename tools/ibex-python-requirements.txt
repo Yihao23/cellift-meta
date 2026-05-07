@@ -12,7 +12,8 @@ mistletoe>=0.7.2
 # pandas>=2.3 requires newer Python (and pulls a meson source build on py3.9).
 pandas<2.3
 premailer
-pyvsc
+pyucis==0.1.3.7162246580
+pyvsc<0.9
 pyyaml
 rst2pdf
 sphinx-issues

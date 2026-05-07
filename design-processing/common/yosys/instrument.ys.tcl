@@ -8,6 +8,10 @@ if { [info exists ::env(TOP_MODULE)] }       { set TOP_MODULE $::env(TOP_MODULE)
 if { [info exists ::env(DECOMPOSE_MEMORY)] } { set DECOMPOSE_MEMORY $::env(DECOMPOSE_MEMORY) } else { set DECOMPOSE_MEMORY 0 }
 if { [info exists ::env(INSTRUMENTATION)] }  { set INSTRUMENTATION $::env(INSTRUMENTATION) }   else { puts "Please set INSTRUMENTATION environment variable"; exit 1 }
 if { [info exists ::env(MUL_TO_ADDS)] }      { set MUL_TO_ADDS $::env(MUL_TO_ADDS) }           else { set MUL_TO_ADDS 0 }
+if { [info exists ::env(ENABLE_CELLIFT_PRECHECK)] } { set ENABLE_CELLIFT_PRECHECK $::env(ENABLE_CELLIFT_PRECHECK) } else { set ENABLE_CELLIFT_PRECHECK 0 }
+# Note: bgeu-mask injection is per-core. See harness/<core>/instrument.ys.tcl
+# for the cv32e40x and ibex variants. The shared file deliberately omits
+# ENABLE_BGEU_MASK / BGEU_MASK_* knobs so it stays core-agnostic.
 
 yosys read_verilog -defer -sv $VERILOG_INPUT
 yosys hierarchy -top $TOP_MODULE -check
@@ -44,6 +48,12 @@ if { [string equal $INSTRUMENTATION "glift"] || [string equal $INSTRUMENTATION "
 
     yosys opt -purge
     yosys timestamp opt
+    if {$ENABLE_CELLIFT_PRECHECK == 1} {
+        yosys cellift_precheck -verbose
+        yosys timestamp cellift_precheck
+        yosys opt -purge
+        yosys timestamp opt
+    }
     yosys cellift -exclude-signals clk_i,rst_ni,clock,reset,reset_wire_reset,g_clk,g_resetn,resetn,rstz,vdd,vd,gnd,gd,vcs,vc,RW0_clk,taint_meta_reset,meta_reset,metareset -imprecise-shl-sshl -imprecise-shr-sshr -verbose
     if {[string equal $INSTRUMENTATION "glift"]} {
         yosys breakdown_glift -exclude-mux
